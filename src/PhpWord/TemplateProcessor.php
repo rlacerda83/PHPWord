@@ -686,13 +686,13 @@ class TemplateProcessor
     {
         $xmlBlock = null;
         preg_match(
-            '/(<\?xml.*)(<w:p\b.*>\${' . $blockname . '}<\/w:.*?p>)(.*)(<w:p\b.*\${\/' . $blockname . '}<\/w:.*?p>)/is',
+            '/\$\{' . $blockname . '}.*\$\{\/' . $blockname . '}/is',
             $this->tempDocumentMainPart,
             $matches
         );
 
-        if (isset($matches[3])) {
-            $xmlBlock = $matches[3];
+        if (isset($matches[0])) {
+            $xmlBlock = $matches[0];
             if ($indexVariables) {
                 $cloned = $this->indexClonedVariables($clones, $xmlBlock);
             } elseif ($variableReplacements !== null && is_array($variableReplacements)) {
@@ -706,7 +706,7 @@ class TemplateProcessor
 
             if ($replace) {
                 $this->tempDocumentMainPart = str_replace(
-                    $matches[2] . $matches[3] . $matches[4],
+                    $matches[0],
                     implode('', $cloned),
                     $this->tempDocumentMainPart
                 );
@@ -725,14 +725,14 @@ class TemplateProcessor
     public function replaceBlock($blockname, $replacement)
     {
         preg_match(
-            '/(<\?xml.*)(<w:p.*>\${' . $blockname . '}<\/w:.*?p>)(.*)(<w:p.*\${\/' . $blockname . '}<\/w:.*?p>)/is',
+            '/\$\{' . $blockname . '}.*\$\{\/' . $blockname . '}/is',
             $this->tempDocumentMainPart,
             $matches
         );
 
-        if (isset($matches[3])) {
+        if (isset($matches[0])) {
             $this->tempDocumentMainPart = str_replace(
-                $matches[2] . $matches[3] . $matches[4],
+                $matches[0],
                 $replacement,
                 $this->tempDocumentMainPart
             );
